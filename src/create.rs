@@ -20,31 +20,27 @@ pub trait Rgb21<'consignment>: Consignment<'consignment> {
     /// Performs primary asset issue, producing [`Contract`] consignment.
     fn create_rgb21(
         chain: Chain,
-        ticker: AsciiString,
         name: AsciiString,
+        description: AsciiString,
         precision: u8,
         allocations: OutpointValueVec,
-        inflation: OutpointValueMap,
-        renomination: Option<OutPoint>,
-        epoch: Option<OutPoint>,
+        engraving: Option<OutPoint>,
     ) -> Contract;
 }
 
 impl<'consignment> Rgb21<'consignment> for Contract {
     fn create_rgb21(
         chain: Chain,
-        ticker: AsciiString,
         name: AsciiString,
+        description: AsciiString,
         precision: u8,
         allocations: OutpointValueVec,
-        inflation: OutpointValueMap,
-        renomination: Option<OutPoint>,
-        epoch: Option<OutPoint>,
+        engraving: Option<OutPoint>,
     ) -> Contract {
         let now = Utc::now().timestamp();
         let mut metadata = type_map! {
-            FieldType::Ticker => field!(AsciiString, ticker),
             FieldType::Name => field!(AsciiString, name),
+            FieldType::Description => field!(AsciiString, description),
             FieldType::Precision => field!(U8, precision),
             FieldType::Timestamp => field!(I64, now)
         };
@@ -64,32 +60,18 @@ impl<'consignment> Rgb21<'consignment> for Contract {
         );
         metadata.insert(FieldType::IssuedSupply.into(), field!(U64, issued_supply));
 
-        if !inflation.is_empty() {
+        // TODO: enable engraving
+        /*
+        if let Some(outpoint) = engraving {
             owned_rights.insert(
-                OwnedRightType::Inflation.into(),
-                inflation.into_assignments(),
-            );
-        }
-
-        if let Some(outpoint) = renomination {
-            owned_rights.insert(
-                OwnedRightType::Renomination.into(),
-                TypedAssignments::Void(vec![Assignment::Revealed {
+                OwnedRightType::Engraving.into(),
+                TypedAssignments::Attachment(vec![Assignment::Revealed {
                     seal: outpoint.into(),
-                    state: data::Void(),
+                    state: rgb::contract::attachment::Revealed { },
                 }]),
             );
         }
-
-        if let Some(outpoint) = epoch {
-            owned_rights.insert(
-                OwnedRightType::BurnReplace.into(),
-                TypedAssignments::Void(vec![Assignment::Revealed {
-                    seal: outpoint.into(),
-                    state: data::Void(),
-                }]),
-            );
-        }
+        */
 
         let schema = schema::schema();
 

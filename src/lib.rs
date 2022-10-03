@@ -5,9 +5,9 @@
     non_camel_case_types,
     non_snake_case,
     unused_mut,
-    unused_imports,
+    // unused_imports,
     dead_code,
-    missing_docs
+    // missing_docs
 )]
 
 //! RGB21 library for working with fungible asset types, operating under

@@ -20,6 +20,12 @@ pub const SCHEMA_ID_BECH32: &str =
 pub const SUBSCHEMA_ID_BECH32: &str =
     "rgbsh1636y76cxrnsfqg7zjnl08f0kqt9j09tre2wfxzrrs86f76ssp7cqnn0yyf";
 
+// TODO: add to rgb-core constants
+pub const FIELD_TYPE_DESCRIPTION: u16 = 0xC2;
+pub const FIELD_TYPE_PARENT_ID: u16 = 0xC3;
+pub const STATE_TYPE_ENGRAVING_RIGHT: u16 = 0xA2;
+pub const TRANSITION_TYPE_ENGRAVING: u16 = 0x10A4;
+
 /// Field types for RGB21 schemata
 ///
 /// Subset of known RGB schema pre-defined types applicable to fungible assets.
@@ -27,37 +33,33 @@ pub const SUBSCHEMA_ID_BECH32: &str =
 #[display(Debug)]
 #[repr(u16)]
 pub enum FieldType {
-    /// Asset ticker
-    ///
-    /// Used within context of genesis or renomination state transition
-    Ticker = FIELD_TYPE_TICKER,
-
     /// Asset name
     ///
-    /// Used within context of genesis or renomination state transition
+    /// Used within context of genesis
     Name = FIELD_TYPE_NAME,
+
+    /// Asset description
+    ///
+    /// Used within context of genesis
+    Description = FIELD_TYPE_DESCRIPTION,
+
+    /// Asset data
+    Data = FIELD_TYPE_DATA,
+
+    /// Asset data format
+    DataFormat = FIELD_TYPE_DATA_FORMAT,
 
     /// Decimal precision
     Precision = FIELD_TYPE_PRECISION,
 
-    /// Supply issued with the genesis, secondary issuance or burn & replace
-    /// state transition
+    /// Supply issued with the genesis
     IssuedSupply = FIELD_TYPE_ISSUED_SUPPLY,
-
-    /// Supply burned with the burn or burn & replace state transition
-    BurnedSupply = FIELD_TYPE_BURN_SUPPLY,
 
     /// Timestamp for genesis
     Timestamp = FIELD_TYPE_TIMESTAMP,
 
-    /// UTXO containing the burned asset
-    BurnUtxo = FIELD_TYPE_BURN_UTXO,
-
-    /// Proofs of the burned supply
-    HistoryProof = FIELD_TYPE_HISTORY_PROOF,
-
-    /// Media format for the information proving burned supply
-    HistoryProofFormat = FIELD_TYPE_HISTORY_PROOF_FORMAT,
+    /// Asset parent ID
+    ParentId = FIELD_TYPE_PARENT_ID,
 }
 
 impl From<FieldType> for rgb::schema::FieldType {
@@ -72,20 +74,11 @@ impl From<FieldType> for rgb::schema::FieldType {
 #[display(Debug)]
 #[repr(u16)]
 pub enum OwnedRightType {
-    /// Inflation control right (secondary issuance right)
-    Inflation = STATE_TYPE_INFLATION_RIGHT,
-
     /// Asset ownership right
     Assets = STATE_TYPE_OWNERSHIP_RIGHT,
 
-    /// Right to open a new burn & replace epoch
-    OpenEpoch = STATE_TYPE_ISSUE_EPOCH_RIGHT,
-
-    /// Right to perform burn or burn & replace operation
-    BurnReplace = STATE_TYPE_ISSUE_REPLACEMENT_RIGHT,
-
-    /// Right to perform asset renomination
-    Renomination = STATE_TYPE_RENOMINATION_RIGHT,
+    /// Asset engraving right
+    Engraving = STATE_TYPE_ENGRAVING_RIGHT,
 }
 
 impl From<OwnedRightType> for rgb::schema::OwnedRightType {
@@ -101,26 +94,13 @@ impl From<OwnedRightType> for rgb::schema::OwnedRightType {
 #[repr(u16)]
 pub enum TransitionType {
     /// Secondary issuance
-    Issue = TRANSITION_TYPE_ISSUE_FUNGIBLE,
+    Issue = TRANSITION_TYPE_ISSUE_NFT,
 
     /// Asset transfer
     Transfer = TRANSITION_TYPE_VALUE_TRANSFER,
 
-    /// Opening of the new burn & replace asset epoch
-    Epoch = TRANSITION_TYPE_ISSUE_EPOCH,
-
-    /// Asset burn operation
-    Burn = TRANSITION_TYPE_ISSUE_BURN,
-
-    /// Burning and replacement (re-issuance) of the asset
-    BurnAndReplace = TRANSITION_TYPE_ISSUE_REPLACE,
-
-    /// Renomination (change in the asset name, ticker, contract text of
-    /// decimal precision).
-    Renomination = TRANSITION_TYPE_RENOMINATION,
-
-    /// Operation splitting rights assigned to the same UTXO
-    RightsSplit = TRANSITION_TYPE_RIGHTS_SPLIT,
+    /// Asset engraving
+    Engraving = TRANSITION_TYPE_ENGRAVING,
 }
 
 impl From<TransitionType> for rgb::schema::TransitionType {
@@ -143,19 +123,18 @@ fn genesis() -> GenesisSchema {
 
     GenesisSchema {
         metadata: type_map! {
-            FieldType::Ticker => Once,
             FieldType::Name => Once,
+            FieldType::Description => NoneOrOnce,
+            FieldType::Data => NoneOrMore,
+            FieldType::DataFormat => NoneOrOnce,
             FieldType::Precision => Once,
             FieldType::Timestamp => Once,
-            // We need this field in order to be able to verify pedersen
-            // commitments
-            FieldType::IssuedSupply => Once
+            FieldType::IssuedSupply => Once,
+            FieldType::ParentId => NoneOrOnce
         },
         owned_rights: type_map! {
-            OwnedRightType::Inflation => NoneOrMore,
-            OwnedRightType::OpenEpoch => NoneOrOnce,
             OwnedRightType::Assets => NoneOrMore,
-            OwnedRightType::Renomination => NoneOrOnce
+            OwnedRightType::Engraving => NoneOrMore
         },
         public_rights: none!(),
     }
@@ -170,56 +149,10 @@ fn issue() -> TransitionSchema {
             // commitments
             FieldType::IssuedSupply => Once
         },
-        closes: type_map! {
-            OwnedRightType::Inflation => OnceOrMore
-        },
+        closes: none!(),
         owned_rights: type_map! {
-            OwnedRightType::Inflation => NoneOrMore,
-            OwnedRightType::OpenEpoch => NoneOrOnce,
-            OwnedRightType::Assets => NoneOrMore
-        },
-        public_rights: none!(),
-    }
-}
-
-fn burn() -> TransitionSchema {
-    use Occurrences::*;
-
-    TransitionSchema {
-        metadata: type_map! {
-            FieldType::BurnedSupply => Once,
-            // Normally issuer should aggregate burned assets into a
-            // single UTXO; however if burn happens as a result of
-            // mistake this will be impossible, so we allow to have
-            // multiple burned UTXOs as a part of a single operation
-            FieldType::BurnUtxo => OnceOrMore,
-            FieldType::HistoryProofFormat => Once,
-            FieldType::HistoryProof => NoneOrMore
-        },
-        closes: type_map! {
-            OwnedRightType::BurnReplace => Once
-        },
-        owned_rights: type_map! {
-            OwnedRightType::BurnReplace => NoneOrOnce
-        },
-        public_rights: none!(),
-    }
-}
-
-fn renomination() -> TransitionSchema {
-    use Occurrences::*;
-
-    TransitionSchema {
-        metadata: type_map! {
-            FieldType::Ticker => NoneOrOnce,
-            FieldType::Name => NoneOrOnce,
-            FieldType::Precision => NoneOrOnce
-        },
-        closes: type_map! {
-            OwnedRightType::Renomination => Once
-        },
-        owned_rights: type_map! {
-            OwnedRightType::Renomination => NoneOrOnce
+            OwnedRightType::Assets => NoneOrMore,
+            OwnedRightType::Engraving => NoneOrMore
         },
         public_rights: none!(),
     }
@@ -247,61 +180,13 @@ pub fn schema() -> Schema {
                 },
                 public_rights: none!()
             },
-            TransitionType::Epoch => TransitionSchema {
+            TransitionType::Engraving => TransitionSchema {
                 metadata: none!(),
                 closes: type_map! {
-                    OwnedRightType::OpenEpoch => Once
+                    OwnedRightType::Engraving => NoneOrMore
                 },
                 owned_rights: type_map! {
-                    OwnedRightType::OpenEpoch => NoneOrOnce,
-                    OwnedRightType::BurnReplace => NoneOrOnce
-                },
-                public_rights: none!()
-            },
-            TransitionType::Burn => burn(),
-            TransitionType::BurnAndReplace => TransitionSchema {
-                metadata: type_map! {
-                    FieldType::BurnedSupply => Once,
-                    // Normally issuer should aggregate burned assets into a
-                    // single UTXO; however if burn happens as a result of
-                    // mistake this will be impossible, so we allow to have
-                    // multiple burned UTXOs as a part of a single operation
-                    FieldType::BurnUtxo => OnceOrMore,
-                    // We need this field in order to be able to verify pedersen
-                    // commitments
-                    FieldType::IssuedSupply => Once,
-                    FieldType::HistoryProofFormat => Once,
-                    FieldType::HistoryProof => NoneOrMore
-                },
-                closes: type_map! {
-                    OwnedRightType::BurnReplace => Once
-                },
-                owned_rights: type_map! {
-                    OwnedRightType::BurnReplace => NoneOrOnce,
-                    OwnedRightType::Assets => OnceOrMore
-                },
-                public_rights: none!()
-            },
-            TransitionType::Renomination => renomination(),
-            // Allows split of rights if they were occasionally allocated to the
-            // same UTXO, for instance both assets and issuance right. Without
-            // this type of transition either assets or inflation rights will be
-            // lost.
-            TransitionType::RightsSplit => TransitionSchema {
-                metadata: type_map! {},
-                closes: type_map! {
-                    OwnedRightType::Inflation => NoneOrMore,
-                    OwnedRightType::Assets => NoneOrMore,
-                    OwnedRightType::OpenEpoch => NoneOrOnce,
-                    OwnedRightType::BurnReplace => NoneOrMore,
-                    OwnedRightType::Renomination => NoneOrOnce
-                },
-                owned_rights: type_map! {
-                    OwnedRightType::Inflation => NoneOrMore,
-                    OwnedRightType::Assets => NoneOrMore,
-                    OwnedRightType::OpenEpoch => NoneOrOnce,
-                    OwnedRightType::BurnReplace => NoneOrMore,
-                    OwnedRightType::Renomination => NoneOrOnce
+                    OwnedRightType::Engraving => NoneOrMore
                 },
                 public_rights: none!()
             }
@@ -310,8 +195,10 @@ pub fn schema() -> Schema {
             // Rational: if we will use just 26 letters of English alphabet (and
             // we are not limited by them), we will have 26^8 possible tickers,
             // i.e. > 208 trillions, which is sufficient amount
-            FieldType::Ticker => TypeRef::ascii_string(),
             FieldType::Name => TypeRef::ascii_string(),
+            FieldType::Description => TypeRef::ascii_string(),
+            FieldType::Data => TypeRef::bytes(),
+            FieldType::DataFormat => TypeRef::u16(),
             // Contract text may contain URL, text or text representation of
             // Ricardian contract, up to 64kb. If the contract doesn't fit, a
             // double SHA256 hash and URL should be used instead, pointing to
@@ -321,26 +208,19 @@ pub fn schema() -> Schema {
             // We need this b/c allocated amounts are hidden behind Pedersen
             // commitments
             FieldType::IssuedSupply => TypeRef::u64(),
-            // Supply in either burn or burn-and-replace procedure
-            FieldType::BurnedSupply => TypeRef::u64(),
             // While UNIX timestamps allow negative numbers; in context of RGB
             // Schema, assets can't be issued in the past before RGB or Bitcoin
             // even existed; so we prohibit all the dates before RGB release
             // This timestamp is equal to 10/10/2020 @ 2:37pm (UTC)
-            FieldType::Timestamp => TypeRef::i64(),
-            FieldType::HistoryProof => TypeRef::bytes(),
-            FieldType::BurnUtxo => TypeRef::new("OutPoint")
+            FieldType::Timestamp => TypeRef::i64()
         },
         owned_right_types: type_map! {
             // How much issuer can issue tokens on this path. If there is no
             // limit, than `core::u64::MAX` / sum(inflation_assignments)
             // must be used, as this will be a de-facto limit to the
             // issuance
-            OwnedRightType::Inflation => StateSchema::DiscreteFiniteField(DiscreteFiniteFieldFormat::Unsigned64bit),
             OwnedRightType::Assets => StateSchema::DiscreteFiniteField(DiscreteFiniteFieldFormat::Unsigned64bit),
-            OwnedRightType::OpenEpoch => StateSchema::Declarative,
-            OwnedRightType::BurnReplace => StateSchema::Declarative,
-            OwnedRightType::Renomination => StateSchema::DataContainer
+            OwnedRightType::Engraving => StateSchema::DataContainer
         },
         public_right_types: none!(),
         script: ValidationScript::Embedded,
@@ -372,35 +252,13 @@ pub fn subschema() -> Schema {
                 },
                 public_rights: none!()
             },
-            TransitionType::Epoch => TransitionSchema {
+            TransitionType::Engraving => TransitionSchema {
                 metadata: none!(),
                 closes: type_map! {
-                    OwnedRightType::OpenEpoch => Once
+                    OwnedRightType::Engraving => NoneOrMore
                 },
                 owned_rights: type_map! {
-                    OwnedRightType::BurnReplace => NoneOrOnce
-                },
-                public_rights: none!()
-            },
-            TransitionType::Burn => burn(),
-            TransitionType::Renomination => renomination(),
-            // Allows split of rights if they were occasionally allocated to the
-            // same UTXO, for instance both assets and issuance right. Without
-            // this type of transition either assets or inflation rights will be
-            // lost.
-            TransitionType::RightsSplit => TransitionSchema {
-                metadata: type_map! {},
-                closes: type_map! {
-                    OwnedRightType::Inflation => NoneOrMore,
-                    OwnedRightType::Assets => NoneOrMore,
-                    OwnedRightType::BurnReplace => NoneOrMore,
-                    OwnedRightType::Renomination => NoneOrOnce
-                },
-                owned_rights: type_map! {
-                    OwnedRightType::Inflation => NoneOrMore,
-                    OwnedRightType::Assets => NoneOrMore,
-                    OwnedRightType::BurnReplace => NoneOrMore,
-                    OwnedRightType::Renomination => NoneOrOnce
+                    OwnedRightType::Engraving => NoneOrMore
                 },
                 public_rights: none!()
             }
@@ -409,31 +267,22 @@ pub fn subschema() -> Schema {
             // Rational: if we will use just 26 letters of English alphabet (and
             // we are not limited by them), we will have 26^8 possible tickers,
             // i.e. > 208 trillions, which is sufficient amount
-            FieldType::Ticker => TypeRef::ascii_string(),
             FieldType::Name => TypeRef::ascii_string(),
             FieldType::Precision => TypeRef::u8(),
             // We need this b/c allocated amounts are hidden behind Pedersen
             // commitments
             FieldType::IssuedSupply => TypeRef::u64(),
-            // Supply in either burn or burn-and-replace procedure
-            FieldType::BurnedSupply => TypeRef::u64(),
             // While UNIX timestamps allow negative numbers; in context of RGB
             // Schema, assets can't be issued in the past before RGB or Bitcoin
             // even existed; so we prohibit all the dates before RGB release
             // This timestamp is equal to 10/10/2020 @ 2:37pm (UTC)
             FieldType::Timestamp => TypeRef::i64(),
-            FieldType::BurnUtxo => TypeRef::new("OutPoint")
+            FieldType::Data => TypeRef::bytes(),
+            FieldType::DataFormat => TypeRef::u16()
         },
         owned_right_types: type_map! {
-            // How much issuer can issue tokens on this path. If there is no
-            // limit, than `core::u64::MAX` / sum(inflation_assignments)
-            // must be used, as this will be a de-facto limit to the
-            // issuance
-            OwnedRightType::Inflation => StateSchema::DiscreteFiniteField(DiscreteFiniteFieldFormat::Unsigned64bit),
             OwnedRightType::Assets => StateSchema::DiscreteFiniteField(DiscreteFiniteFieldFormat::Unsigned64bit),
-            OwnedRightType::OpenEpoch => StateSchema::Declarative,
-            OwnedRightType::BurnReplace => StateSchema::Declarative,
-            OwnedRightType::Renomination => StateSchema::DataContainer
+            OwnedRightType::Engraving => StateSchema::DataContainer
         },
         public_right_types: none!(),
         script: ValidationScript::Embedded,
