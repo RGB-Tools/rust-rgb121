@@ -33,11 +33,13 @@ extern crate serde_crate as serde;
 #[cfg(feature = "serde")]
 extern crate serde_with;
 
-pub mod schema;
+mod schema;
 mod create;
 mod asset;
 mod transitions;
 
 pub use asset::{Asset, Error};
-pub use create::Rgb21;
-pub use schema::{schema, subschema, SCHEMA_ID_BECH32, SUBSCHEMA_ID_BECH32};
+pub use create::{Error as CreateError, FileAttachment, Rgb21};
+pub use schema::{
+    schema, subschema, FieldType, OwnedRightType, SCHEMA_ID_BECH32, SUBSCHEMA_ID_BECH32,
+};
