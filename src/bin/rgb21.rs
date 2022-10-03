@@ -1,14 +1,3 @@
-// RGB20 Library: high-level API to RGB fungible assets.
-// Written in 2019-2022 by
-//     Dr. Maxim Orlovsky <orlovsky@lnp-bp.org>
-//
-// To the extent possible under law, the author(s) have dedicated all copyright
-// and related and neighboring rights to this software to the public domain
-// worldwide. This software is distributed without any warranty.
-//
-// You should have received a copy of the MIT License along with this software.
-// If not, see <https://opensource.org/licenses/MIT>.
-
 #[macro_use]
 extern crate clap;
 extern crate serde_crate as serde;
@@ -22,17 +11,17 @@ use colored::Colorize;
 use lnpbp::chain::Chain;
 use rgb::fungible::allocation::{AllocatedValue, OutpointValue, UtxobValue};
 use rgb::{Consignment, Contract, IntoRevealedSeal, StateTransfer};
-use rgb20::{Asset, Rgb20};
+use rgb21::{Asset, Rgb21};
 use stens::AsciiString;
 use strict_encoding::{StrictDecode, StrictEncode};
 
 #[derive(Parser, Clone, Debug)]
 #[clap(
-    name = "rgb20",
-    bin_name = "rgb20",
+    name = "rgb21",
+    bin_name = "rgb21",
     author,
     version,
-    about = "Command-line tool for working with RGB20 fungible assets"
+    about = "Command-line tool for working with RGB21 fungible assets"
 )]
 pub struct Opts {
     /// Bitcoin network to use
@@ -126,7 +115,7 @@ fn main() -> Result<(), String> {
                     map
                 },
             );
-            let contract = Contract::create_rgb20(
+            let contract = Contract::create_rgb21(
                 opts.network,
                 ticker,
                 name,
@@ -138,7 +127,7 @@ fn main() -> Result<(), String> {
             );
 
             let _asset =
-                Asset::try_from(&contract).expect("create_rgb20 does not match RGB20 schema");
+                Asset::try_from(&contract).expect("create_rgb21 does not match RGB21 schema");
 
             eprintln!(
                 "{} {}\n",

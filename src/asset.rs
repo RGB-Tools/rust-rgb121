@@ -1,22 +1,11 @@
-// RGB20 Library: high-level API to RGB fungible assets.
-// Written in 2019-2022 by
-//     Dr. Maxim Orlovsky <orlovsky@lnp-bp.org>
-//
-// To the extent possible under law, the author(s) have dedicated all copyright
-// and related and neighboring rights to this software to the public domain
-// worldwide. This software is distributed without any warranty.
-//
-// You should have received a copy of the MIT License along with this software.
-// If not, see <https://opensource.org/licenses/MIT>.
-
 use std::collections::btree_set;
 
 use bitcoin::OutPoint;
 use rgb::{ConsignmentType, ContractState, InmemConsignment, NodeId, OwnedValue};
 
-/// RGB20 asset information.
+/// RGB21 asset information.
 ///
-/// Structure presents complete set of RGB20 asset-related data which can be
+/// Structure presents complete set of RGB21 asset-related data which can be
 /// extracted from the genesis or a consignment. It is not the source of the
 /// truth, and the presence of the data in the structure does not imply their
 /// validity, since the structure constructor does not validates blockchain or
@@ -80,12 +69,12 @@ impl Asset {
     }
 }
 
-/// Errors generated during RGB20 asset information parsing from the underlying
+/// Errors generated during RGB21 asset information parsing from the underlying
 /// genesis or consignment data
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Display, From, Error)]
 #[display(doc_comments)]
 pub enum Error {
-    /// genesis schema id does not match any of RGB20 schemata
+    /// genesis schema id does not match any of RGB21 schemata
     WrongSchemaId,
 
     /// genesis defines a seal referencing witness transaction while there

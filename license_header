@@ -1,6 +1,10 @@
-// RGB20 Library: high-level API to RGB fungible assets.
+// RGB21 Library: high-level API to RGB fungible assets.
 // Written in 2019-2022 by
 //     Dr. Maxim Orlovsky <orlovsky@lnp-bp.org>
+// Written in 2022 by
+//     Federico Tenga <federicotenga@gmail.com>
+//     Zoe Faltibà <zoefaltiba@gmail.com>
+//     Nicola Busanello <nicola.busanello@gmail.com>
 //
 // To the extent possible under law, the author(s) have dedicated all copyright
 // and related and neighboring rights to this software to the public domain

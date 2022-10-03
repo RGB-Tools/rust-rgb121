@@ -1,9 +1,11 @@
-# RGB-20 Library
+# RGB-21 Library
 
-RGB20 is an RGB schema for fungible digital assets on bitcoin & lightning.
+> :warning: **Warning: this is a work in progress**
 
-This repository provides rust library and a command-line utility `rgb20` which
-can be used alongside RGB Node to generate and parse RGB20 data (schema, issue
+RGB21 is an RGB schema for non-fungible digital assets on bitcoin & lightning.
+
+This repository provides rust library and a command-line utility `rgb21` which
+can be used alongside RGB Node to generate and parse RGB21 data (schema, issue
 assets, interpret contract information returned by RGB Node).
 
 ## Command-line utility
@@ -12,22 +14,22 @@ assets, interpret contract information returned by RGB Node).
 
 #### Build
 
-Clone the repository and checkout to the desired version (here `v0.8.0-rc.3`):
+Clone the repository and checkout to the desired version (here `v0.1.0`):
 
 ```console
-$ git clone https://github.com/RGB-WG/rust-rgb20
-$ cd rust-rgb20
-$ git checkout v0.8.0-rc.3
+$ git clone https://github.com/RGB-Tools/rust-rgb21
+$ cd rust-rgb21
+$ git checkout v0.1.0
 ```
 
 Build and tag the Docker image:
 
 ```console
-$ docker build -t rgb20:v0.8.0-rc.3 .
+$ docker build -t rgb21:v0.1.0 .
 ```
 
 #### Usage
 
 ```console
-$ docker run rgb20:v0.8.0-rc.3 --help
+$ docker run rgb21:v0.1.0 --help
 ```

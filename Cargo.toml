@@ -1,25 +1,30 @@
 [package]
-name = "rgb20"
-version = "0.8.0-rc.4"
+name = "rgb21"
+version = "0.1.0"
 license = "MIT"
-authors = ["Dr Maxim Orlovsky <orlovsky@pandoracore.com>"]
-description = "RGB-20 Library: fungible digital assets for bitcoin & lightning"
-repository = "https://github.com/rgb-org/rgb-core"
+authors = [
+  "Dr Maxim Orlovsky <orlovsky@pandoracore.com>",
+  "Federico Tenga <federicotenga@gmail.com>",
+  "Zoe Faltibà <zoefaltiba@gmail.com>",
+  "Nicola Busanello <nicola.busanello@gmail.com>"
+]
+description = "RGB-21 Library: fungible digital assets for bitcoin & lightning"
+repository = "https://github.com/RGB-Tools/rust-rgb21"
 homepage = "https://rgb.network"
-keywords = ["bitcoin", "lightning", "rgb", "smart-contracts", "digital-assets"]
+keywords = ["bitcoin", "lightning", "rgb", "smart-contracts", "nft"]
 categories = ["cryptography::cryptocurrencies"]
 readme = "README.md"
 edition = "2021"
 rust-version = "1.59.0"
 
 [lib]
-name = "rgb20"
+name = "rgb21"
 path = "src/lib.rs"
 crate-type = ["rlib", "staticlib"]
 
 [[bin]]
-name = "rgb20"
-path = "src/bin/rgb20.rs"
+name = "rgb21"
+path = "src/bin/rgb21.rs"
 required-features = ["cli"]
 
 [dependencies]

@@ -1,15 +1,4 @@
-// RGB20 Library: high-level API to RGB fungible assets.
-// Written in 2019-2022 by
-//     Dr. Maxim Orlovsky <orlovsky@lnp-bp.org>
-//
-// To the extent possible under law, the author(s) have dedicated all copyright
-// and related and neighboring rights to this software to the public domain
-// worldwide. This software is distributed without any warranty.
-//
-// You should have received a copy of the MIT License along with this software.
-// If not, see <https://opensource.org/licenses/MIT>.
-
-//! RGB20 schemata defining fungible asset smart contract prototypes.
+//! RGB21 schemata defining fungible asset smart contract prototypes.
 
 use std::str::FromStr;
 
@@ -22,16 +11,16 @@ use rgb::vm::embedded::constants::*;
 use rgb::ValidationScript;
 use stens::{PrimitiveType, StructField, TypeRef, TypeSystem};
 
-/// Schema identifier for full RGB20 fungible asset
+/// Schema identifier for full RGB21 fungible asset
 pub const SCHEMA_ID_BECH32: &str =
     "rgbsh18kp34t5nn5zu4hz6g7lqjdjskw8aaf84ecdntrtrdvzs7gn3rnzskscfq8";
 
-/// Schema identifier for full RGB20 fungible asset subschema prohibiting burn &
+/// Schema identifier for full RGB21 fungible asset subschema prohibiting burn &
 /// replace operations
 pub const SUBSCHEMA_ID_BECH32: &str =
     "rgbsh1636y76cxrnsfqg7zjnl08f0kqt9j09tre2wfxzrrs86f76ssp7cqnn0yyf";
 
-/// Field types for RGB20 schemata
+/// Field types for RGB21 schemata
 ///
 /// Subset of known RGB schema pre-defined types applicable to fungible assets.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Display)]
@@ -76,7 +65,7 @@ impl From<FieldType> for rgb::schema::FieldType {
     fn from(ft: FieldType) -> Self { ft as rgb::schema::FieldType }
 }
 
-/// Owned right types used by RGB20 schemata
+/// Owned right types used by RGB21 schemata
 ///
 /// Subset of known RGB schema pre-defined types applicable to fungible assets.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Display)]
@@ -104,7 +93,7 @@ impl From<OwnedRightType> for rgb::schema::OwnedRightType {
     fn from(t: OwnedRightType) -> Self { t as rgb::schema::OwnedRightType }
 }
 
-/// State transition types defined by RGB20 schemata
+/// State transition types defined by RGB21 schemata
 ///
 /// Subset of known RGB schema pre-defined types applicable to fungible assets.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Display)]
@@ -236,7 +225,7 @@ fn renomination() -> TransitionSchema {
     }
 }
 
-/// Builds & returns complete RGB20 schema (root schema object)
+/// Builds & returns complete RGB21 schema (root schema object)
 pub fn schema() -> Schema {
     use Occurrences::*;
 
@@ -359,7 +348,7 @@ pub fn schema() -> Schema {
     }
 }
 
-/// Provides the only defined RGB20 subschema, which prohibits replace procedure
+/// Provides the only defined RGB21 subschema, which prohibits replace procedure
 /// and allows only burn operations
 pub fn subschema() -> Schema {
     use Occurrences::*;
@@ -367,7 +356,7 @@ pub fn subschema() -> Schema {
     Schema {
         rgb_features: none!(),
         root_id: SchemaId::from_str(SCHEMA_ID_BECH32)
-            .expect("Broken root schema ID for RGB20 sub-schema"),
+            .expect("Broken root schema ID for RGB21 sub-schema"),
         type_system: type_system(),
         genesis: genesis(),
         extensions: none!(),
@@ -485,16 +474,16 @@ mod test {
     fn schema_strict_encode() {
         let data = schema()
             .strict_serialize()
-            .expect("RGB-20 schema serialization failed");
+            .expect("RGB-21 schema serialization failed");
 
         let bech32data = data.bech32_zip_string();
         println!("{}", bech32data);
 
-        let schema20 =
-            Schema::strict_deserialize(data).expect("RGB-20 schema deserialization failed");
+        let schema21 =
+            Schema::strict_deserialize(data).expect("RGB-21 schema deserialization failed");
 
-        assert_eq!(schema(), schema20);
-        assert_eq!(format!("{:#?}", schema()), format!("{:#?}", schema20));
+        assert_eq!(schema(), schema21);
+        assert_eq!(format!("{:#?}", schema()), format!("{:#?}", schema21));
         assert_eq!(
             bech32data,
             "z1qxz4zwcwcgcqcl2d2tgnrzqtwq33swqzfvt43zkyepg49ky655klwg7cfefgg4pf38ewe78em8u6qwq5rgwx\

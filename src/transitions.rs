@@ -1,14 +1,3 @@
-// RGB20 Library: high-level API to RGB fungible assets.
-// Written in 2019-2022 by
-//     Dr. Maxim Orlovsky <orlovsky@lnp-bp.org>
-//
-// To the extent possible under law, the author(s) have dedicated all copyright
-// and related and neighboring rights to this software to the public domain
-// worldwide. This software is distributed without any warranty.
-//
-// You should have received a copy of the MIT License along with this software.
-// If not, see <https://opensource.org/licenses/MIT>.
-
 use std::collections::BTreeSet;
 
 use bitcoin::OutPoint;
@@ -19,7 +8,7 @@ use seals::txout::ExplicitSeal;
 use super::schema::{OwnedRightType, TransitionType};
 use super::Asset;
 
-/// Errors happening during construction of RGB-20 asset state transitions
+/// Errors happening during construction of RGB-21 asset state transitions
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Display, Error)]
 #[display(doc_comments)]
 pub enum Error {
@@ -103,7 +92,7 @@ impl Asset {
         todo!()
     }
 
-    /// Creates a fungible asset-specific state transition (i.e. RGB-20
+    /// Creates a fungible asset-specific state transition (i.e. RGB-21
     /// schema-based) given an asset information, inputs and desired outputs
     pub fn transfer(
         &self,

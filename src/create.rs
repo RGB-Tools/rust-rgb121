@@ -1,14 +1,3 @@
-// RGB20 Library: high-level API to RGB fungible assets.
-// Written in 2019-2022 by
-//     Dr. Maxim Orlovsky <orlovsky@lnp-bp.org>
-//
-// To the extent possible under law, the author(s) have dedicated all copyright
-// and related and neighboring rights to this software to the public domain
-// worldwide. This software is distributed without any warranty.
-//
-// You should have received a copy of the MIT License along with this software.
-// If not, see <https://opensource.org/licenses/MIT>.
-
 use std::collections::BTreeMap;
 
 use bitcoin::OutPoint;
@@ -25,11 +14,11 @@ use stens::AsciiString;
 use crate::schema;
 use crate::schema::{FieldType, OwnedRightType};
 
-/// Extension trait for consignments defining RGB20-specific API.
+/// Extension trait for consignments defining RGB21-specific API.
 #[allow(clippy::too_many_arguments)]
-pub trait Rgb20<'consignment>: Consignment<'consignment> {
+pub trait Rgb21<'consignment>: Consignment<'consignment> {
     /// Performs primary asset issue, producing [`Contract`] consignment.
-    fn create_rgb20(
+    fn create_rgb21(
         chain: Chain,
         ticker: AsciiString,
         name: AsciiString,
@@ -41,8 +30,8 @@ pub trait Rgb20<'consignment>: Consignment<'consignment> {
     ) -> Contract;
 }
 
-impl<'consignment> Rgb20<'consignment> for Contract {
-    fn create_rgb20(
+impl<'consignment> Rgb21<'consignment> for Contract {
+    fn create_rgb21(
         chain: Chain,
         ticker: AsciiString,
         name: AsciiString,

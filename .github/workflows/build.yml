@@ -37,7 +37,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --bin rgb20 --features cli
+          args: --bin rgb21 --features cli
   features:
     runs-on: ubuntu-latest
     strategy:
