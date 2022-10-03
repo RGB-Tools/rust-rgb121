@@ -1,0 +1,46 @@
+[package]
+name = "rgb20"
+version = "0.8.0-rc.4"
+license = "MIT"
+authors = ["Dr Maxim Orlovsky <orlovsky@pandoracore.com>"]
+description = "RGB-20 Library: fungible digital assets for bitcoin & lightning"
+repository = "https://github.com/rgb-org/rgb-core"
+homepage = "https://rgb.network"
+keywords = ["bitcoin", "lightning", "rgb", "smart-contracts", "digital-assets"]
+categories = ["cryptography::cryptocurrencies"]
+readme = "README.md"
+edition = "2021"
+rust-version = "1.59.0"
+
+[lib]
+name = "rgb20"
+path = "src/lib.rs"
+crate-type = ["rlib", "staticlib"]
+
+[[bin]]
+name = "rgb20"
+path = "src/bin/rgb20.rs"
+required-features = ["cli"]
+
+[dependencies]
+amplify = "3.13.0"
+strict_encoding = "~0.8.0"
+stens = "0.7.1"
+lnpbp = "0.8.0"
+bp-seals = "0.8.0"
+rgb-std = { git = "https://github.com/zoedberg/rgb-std", branch = "fix/rgb_core", version = "0.8.0", features = ["wallet"] }
+bitcoin = "0.28.1"
+chrono = "0.4"
+url = "2.1"
+serde_crate = { package = "serde", version = "1", features = ["derive"], optional = true }
+serde_with = { version = "1.8", features = ["hex"], optional = true }
+serde_yaml = { version = "0.8", optional = true }
+serde_json = { version = "1", optional = true }
+clap = { version = "~3.1.18", optional = true, features = ["derive", "env"] }
+colored = "2.0.0"
+
+[features]
+default = []
+all = ["serde", "cli"]
+serde = ["serde_crate", "serde_with", "lnpbp/serde", "bitcoin/use-serde", "rgb-std/serde", "amplify/serde", "chrono/serde"]
+cli = ["clap", "serde", "serde_yaml", "serde_json"]
