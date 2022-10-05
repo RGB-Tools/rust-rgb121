@@ -1232,6 +1232,7 @@ dependencies = [
  "chrono",
  "clap",
  "colored",
+ "commit_verify",
  "lnpbp",
  "rgb-std",
  "serde",

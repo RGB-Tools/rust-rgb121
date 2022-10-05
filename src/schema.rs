@@ -13,17 +13,15 @@ use stens::{PrimitiveType, StructField, TypeRef, TypeSystem};
 
 /// Schema identifier for full RGB21 fungible asset
 pub const SCHEMA_ID_BECH32: &str =
-    "rgbsh18kp34t5nn5zu4hz6g7lqjdjskw8aaf84ecdntrtrdvzs7gn3rnzskscfq8";
+    "rgbsh1rw8wefw62fhkkvqycfr767dzm7dmpgyqz6cfczatt0xa0az9697sehkwrj";
 
-/// Schema identifier for full RGB21 fungible asset subschema prohibiting burn &
-/// replace operations
+/// Schema identifier for full RGB21 fungible asset subschema prohibiting
+/// engraving operation
 pub const SUBSCHEMA_ID_BECH32: &str =
-    "rgbsh1636y76cxrnsfqg7zjnl08f0kqt9j09tre2wfxzrrs86f76ssp7cqnn0yyf";
+    "rgbsh1pwfwgxx0ujph3lk54jerzjrl7yk8e9puxj5sjm7qk5p0z7expzpse2nvwn";
 
 // TODO: add to rgb-core constants
-pub const FIELD_TYPE_DESCRIPTION: u16 = 0xC2;
 pub const FIELD_TYPE_PARENT_ID: u16 = 0xC3;
-pub const STATE_TYPE_ENGRAVING_RIGHT: u16 = 0xA2;
 pub const TRANSITION_TYPE_ENGRAVING: u16 = 0x10A4;
 
 /// Field types for RGB21 schemata
@@ -38,10 +36,15 @@ pub enum FieldType {
     /// Used within context of genesis
     Name = FIELD_TYPE_NAME,
 
+    /// Text of the asset contract
+    ///
+    /// Used within context of genesis
+    RicardianContract = FIELD_TYPE_CONTRACT_TEXT,
+
     /// Asset description
     ///
     /// Used within context of genesis
-    Description = FIELD_TYPE_DESCRIPTION,
+    Description = FIELD_TYPE_COMMENTARY,
 
     /// Asset data
     Data = FIELD_TYPE_DATA,
@@ -78,7 +81,7 @@ pub enum OwnedRightType {
     Assets = STATE_TYPE_OWNERSHIP_RIGHT,
 
     /// Asset engraving right
-    Engraving = STATE_TYPE_ENGRAVING_RIGHT,
+    Engraving = STATE_TYPE_OWNERSHIP_RIGHT + 1,
 }
 
 impl From<OwnedRightType> for rgb::schema::OwnedRightType {
@@ -124,6 +127,7 @@ fn genesis() -> GenesisSchema {
     GenesisSchema {
         metadata: type_map! {
             FieldType::Name => Once,
+            FieldType::RicardianContract => NoneOrOnce,
             FieldType::Description => NoneOrOnce,
             FieldType::Data => NoneOrMore,
             FieldType::DataFormat => NoneOrOnce,
@@ -196,6 +200,7 @@ pub fn schema() -> Schema {
             // we are not limited by them), we will have 26^8 possible tickers,
             // i.e. > 208 trillions, which is sufficient amount
             FieldType::Name => TypeRef::ascii_string(),
+            FieldType::RicardianContract => TypeRef::ascii_string(),
             FieldType::Description => TypeRef::ascii_string(),
             FieldType::Data => TypeRef::bytes(),
             FieldType::DataFormat => TypeRef::u16(),
@@ -212,7 +217,8 @@ pub fn schema() -> Schema {
             // Schema, assets can't be issued in the past before RGB or Bitcoin
             // even existed; so we prohibit all the dates before RGB release
             // This timestamp is equal to 10/10/2020 @ 2:37pm (UTC)
-            FieldType::Timestamp => TypeRef::i64()
+            FieldType::Timestamp => TypeRef::i64(),
+            FieldType::ParentId => TypeRef::ascii_string()
         },
         owned_right_types: type_map! {
             // How much issuer can issue tokens on this path. If there is no
@@ -228,8 +234,7 @@ pub fn schema() -> Schema {
     }
 }
 
-/// Provides the only defined RGB21 subschema, which prohibits replace procedure
-/// and allows only burn operations
+/// RGB21 subschema which allows simple asset transfers but no engraving
 pub fn subschema() -> Schema {
     use Occurrences::*;
 
@@ -251,16 +256,6 @@ pub fn subschema() -> Schema {
                     OwnedRightType::Assets => NoneOrMore
                 },
                 public_rights: none!()
-            },
-            TransitionType::Engraving => TransitionSchema {
-                metadata: none!(),
-                closes: type_map! {
-                    OwnedRightType::Engraving => NoneOrMore
-                },
-                owned_rights: type_map! {
-                    OwnedRightType::Engraving => NoneOrMore
-                },
-                public_rights: none!()
             }
         },
         field_types: type_map! {
@@ -268,6 +263,10 @@ pub fn subschema() -> Schema {
             // we are not limited by them), we will have 26^8 possible tickers,
             // i.e. > 208 trillions, which is sufficient amount
             FieldType::Name => TypeRef::ascii_string(),
+            FieldType::RicardianContract => TypeRef::ascii_string(),
+            FieldType::Description => TypeRef::ascii_string(),
+            FieldType::Data => TypeRef::bytes(),
+            FieldType::DataFormat => TypeRef::u16(),
             FieldType::Precision => TypeRef::u8(),
             // We need this b/c allocated amounts are hidden behind Pedersen
             // commitments
@@ -277,8 +276,7 @@ pub fn subschema() -> Schema {
             // even existed; so we prohibit all the dates before RGB release
             // This timestamp is equal to 10/10/2020 @ 2:37pm (UTC)
             FieldType::Timestamp => TypeRef::i64(),
-            FieldType::Data => TypeRef::bytes(),
-            FieldType::DataFormat => TypeRef::u16()
+            FieldType::ParentId => TypeRef::ascii_string()
         },
         owned_right_types: type_map! {
             OwnedRightType::Assets => StateSchema::DiscreteFiniteField(DiscreteFiniteFieldFormat::Unsigned64bit),
@@ -305,7 +303,7 @@ mod test {
         assert_eq!(id.to_string(), SCHEMA_ID_BECH32);
         assert_eq!(
             id.to_string(),
-            "rgbsh18kp34t5nn5zu4hz6g7lqjdjskw8aaf84ecdntrtrdvzs7gn3rnzskscfq8"
+            "rgbsh1rw8wefw62fhkkvqycfr767dzm7dmpgyqz6cfczatt0xa0az9697sehkwrj"
         );
     }
 
@@ -315,7 +313,7 @@ mod test {
         assert_eq!(id.to_string(), SUBSCHEMA_ID_BECH32);
         assert_eq!(
             id.to_string(),
-            "rgbsh1636y76cxrnsfqg7zjnl08f0kqt9j09tre2wfxzrrs86f76ssp7cqnn0yyf"
+            "rgbsh1pwfwgxx0ujph3lk54jerzjrl7yk8e9puxj5sjm7qk5p0z7expzpse2nvwn"
         );
     }
 
@@ -335,10 +333,9 @@ mod test {
         assert_eq!(format!("{:#?}", schema()), format!("{:#?}", schema21));
         assert_eq!(
             bech32data,
-            "z1qxz4zwcwcgcqcl2d2tgnrzqtwq33swqzfvt43zkyepg49ky655klwg7cfefgg4pf38ewe78em8u6qwq5rgwx\
-            ah03mf0r4pg2q6nhk7exy2a32c8hk3hns7lm4yvrf7ux6m8pr6y3vy3vtt75f356s2dyr4q576cq8n9k42va5ut\
-            rfqnw7ysnkgyytecfqzy034s2cxqzt0nwnzzkyun24a2ljuwqt8xd0k3q6sd0wm4zmexvnjn3pge7w98kkvq2xd\
-            yc2kv5aa2d2tekv6lke8f6jc6z4hf290ccq08plf4h3u2t8nllq9cyvya79"
+            "z1qxz56vgwcgcpquew4yz9kyqluprnpuqyjchtq9yfu72g482873056ltwxd6ksn43amktxrameacvpawam40w\
+            mvenqsjdc0ldsdpx6qus97wg7ersntxzrw3n7x03k8ens9z57nuguwe00ftpgpwfch4x6j5ruzgmxx62x98e6x9\
+            3l4tmss4c85z0aghptrewykkr4uxt6qcc3t0mlaw08vxdkgvsfm2847"
         );
     }
 

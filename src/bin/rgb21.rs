@@ -40,19 +40,17 @@ pub enum Command {
         name: AsciiString,
 
         /// Asset description
-        description: AsciiString,
+        description: Option<AsciiString>,
 
         /// Precision, i.e. number of digits reserved for fractional part
         #[clap(short, long, default_value = "8")]
         precision: u8,
 
+        /// Asset parent ID
+        parent_id: Option<AsciiString>,
+
         /// Asset allocations, in form of <amount>@<txid>:<vout>
         allocations: Vec<OutpointValue>,
-
-        /// Enable engraving procedure; parameter takes argument in form of
-        /// <txid>:<vout> specifying output controlling engraving right
-        #[clap(short, long)]
-        engraving: Option<OutPoint>,
     },
 
     /// Prepares state transition for assets transfer.
@@ -84,34 +82,21 @@ fn main() -> Result<(), String> {
 
     match opts.command {
         Command::Issue {
-            ticker,
             name,
+            description,
             precision,
-            allocation,
-            inflation,
-            renomination,
-            epoch,
+            parent_id,
+            allocations,
         } => {
-            let inflation = inflation.into_iter().fold(
-                BTreeMap::new(),
-                |mut map, OutpointValue { value, outpoint }| {
-                    // We may have only a single secondary issuance right per
-                    // outpoint, so folding all outpoints
-                    map.entry(outpoint)
-                        .and_modify(|amount| *amount += value)
-                        .or_insert(value);
-                    map
-                },
-            );
             let contract = Contract::create_rgb21(
                 opts.network,
-                ticker,
                 name,
+                description,
                 precision,
-                allocation,
-                inflation,
-                renomination,
-                epoch,
+                parent_id,
+                vec![],
+                vec![],
+                allocations,
             );
 
             let _asset =

@@ -5,9 +5,9 @@
     non_camel_case_types,
     non_snake_case,
     unused_mut,
-    // unused_imports,
+    unused_imports,
     dead_code,
-    // missing_docs
+    missing_docs
 )]
 
 //! RGB21 library for working with fungible asset types, operating under
@@ -33,11 +33,13 @@ extern crate serde_crate as serde;
 #[cfg(feature = "serde")]
 extern crate serde_with;
 
-pub mod schema;
+mod schema;
 mod create;
 mod asset;
 mod transitions;
 
 pub use asset::{Asset, Error};
-pub use create::Rgb21;
-pub use schema::{schema, subschema, SCHEMA_ID_BECH32, SUBSCHEMA_ID_BECH32};
+pub use create::{Error as CreateError, FileAttachment, Rgb21};
+pub use schema::{
+    schema, subschema, FieldType, OwnedRightType, SCHEMA_ID_BECH32, SUBSCHEMA_ID_BECH32,
+};

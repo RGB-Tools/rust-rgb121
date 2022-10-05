@@ -29,6 +29,7 @@ required-features = ["cli"]
 
 [dependencies]
 amplify = "3.13.0"
+commit_verify = "0.8.0"
 strict_encoding = "~0.8.0"
 stens = "0.7.1"
 lnpbp = "0.8.0"
