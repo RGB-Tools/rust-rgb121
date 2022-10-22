@@ -13,12 +13,12 @@ use stens::{PrimitiveType, StructField, TypeRef, TypeSystem};
 
 /// Schema identifier for full RGB21 fungible asset
 pub const SCHEMA_ID_BECH32: &str =
-    "rgbsh172czzdjegt8zuy9nd8l8ul7zectynju66fzdny6qyexglaflc5fsfn455f";
+    "rgbsh1ykclt9qxkskqt88dwgccsp4w624k7adjwj06sknjkh04ygtc7rqsnykld7";
 
 /// Schema identifier for full RGB21 fungible asset subschema prohibiting
 /// engraving operation
 pub const SUBSCHEMA_ID_BECH32: &str =
-    "rgbsh1255ecnq76a7j4pcy9gwuw8ymk0v48gjx0gs2zk6qqdpctqkhg79qm9x6le";
+    "rgbsh1ep4k4qvghntwptcn0gqmfpdvr8vz3amslvy4pc7s32u7h500l5hqxlzjsk";
 
 /// Field types for RGB21 schemata
 ///
@@ -147,7 +147,9 @@ fn issue() -> TransitionSchema {
         metadata: type_map! {
             // We need this field in order to be able to verify pedersen
             // commitments
-            FieldType::IssuedSupply => Once
+            FieldType::IssuedSupply => Once,
+            FieldType::Data => NoneOrMore,
+            FieldType::DataFormat => NoneOrOnce
         },
         closes: none!(),
         owned_rights: type_map! {
@@ -304,7 +306,7 @@ mod test {
         assert_eq!(id.to_string(), SCHEMA_ID_BECH32);
         assert_eq!(
             id.to_string(),
-            "rgbsh172czzdjegt8zuy9nd8l8ul7zectynju66fzdny6qyexglaflc5fsfn455f"
+            "rgbsh1ykclt9qxkskqt88dwgccsp4w624k7adjwj06sknjkh04ygtc7rqsnykld7"
         );
     }
 
@@ -314,7 +316,7 @@ mod test {
         assert_eq!(id.to_string(), SUBSCHEMA_ID_BECH32);
         assert_eq!(
             id.to_string(),
-            "rgbsh1255ecnq76a7j4pcy9gwuw8ymk0v48gjx0gs2zk6qqdpctqkhg79qm9x6le"
+            "rgbsh1ep4k4qvghntwptcn0gqmfpdvr8vz3amslvy4pc7s32u7h500l5hqxlzjsk"
         );
     }
 
@@ -334,9 +336,9 @@ mod test {
         assert_eq!(format!("{:#?}", schema()), format!("{:#?}", schema21));
         assert_eq!(
             bech32data,
-            "z1qxz56vgwcgcpquew4yz9kyqluprnpuqyjchtq9yfu72g4828730sf87npmg2zww9hgae7mdv8mpsd3mmw7at\
-            t47wzzg8ql45zuf8xxuq0nsteegxhw8nj3zhyml8mcmry6c236gfwxk8wnc2qmz24apjh9r02jwcdppnjj53r67\
-            ldgm6kacxvyr653evnwr499s79q2hkc030xew4tedleuauuwzcvlvpvx72kyc"
+            "z1qxz56wgwcfqqe894xuf8fzlcqqlc9q386zjgzfjg8sn5fapuytlkyxtmjv3g0994wej8k0pnmp7gy8wweln0\
+            928035szpch64fhjf33kqr5ug7w0p58r7v2s2dr0ucm9vv3tp2rfp8df0wehq5wmg29dc3wat7lgtrucvuhya3a\
+            tf0h0h5mskce6g79lghpjv6whxxrcuzfkfc3zcdz4rnnahey4wv43ejfn7eajpk0"
         );
     }
 
