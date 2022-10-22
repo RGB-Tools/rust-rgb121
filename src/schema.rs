@@ -13,16 +13,12 @@ use stens::{PrimitiveType, StructField, TypeRef, TypeSystem};
 
 /// Schema identifier for full RGB21 fungible asset
 pub const SCHEMA_ID_BECH32: &str =
-    "rgbsh1rw8wefw62fhkkvqycfr767dzm7dmpgyqz6cfczatt0xa0az9697sehkwrj";
+    "rgbsh172czzdjegt8zuy9nd8l8ul7zectynju66fzdny6qyexglaflc5fsfn455f";
 
 /// Schema identifier for full RGB21 fungible asset subschema prohibiting
 /// engraving operation
 pub const SUBSCHEMA_ID_BECH32: &str =
-    "rgbsh1pwfwgxx0ujph3lk54jerzjrl7yk8e9puxj5sjm7qk5p0z7expzpse2nvwn";
-
-// TODO: add to rgb-core constants
-pub const FIELD_TYPE_PARENT_ID: u16 = 0xC3;
-pub const TRANSITION_TYPE_ENGRAVING: u16 = 0x10A4;
+    "rgbsh1255ecnq76a7j4pcy9gwuw8ymk0v48gjx0gs2zk6qqdpctqkhg79qm9x6le";
 
 /// Field types for RGB21 schemata
 ///
@@ -185,11 +181,16 @@ pub fn schema() -> Schema {
                 public_rights: none!()
             },
             TransitionType::Engraving => TransitionSchema {
-                metadata: none!(),
+                metadata: type_map! {
+                    FieldType::Data => NoneOrMore,
+                    FieldType::DataFormat => NoneOrOnce
+                },
                 closes: type_map! {
+                    OwnedRightType::Assets => OnceOrMore,
                     OwnedRightType::Engraving => NoneOrMore
                 },
                 owned_rights: type_map! {
+                    OwnedRightType::Assets => NoneOrMore,
                     OwnedRightType::Engraving => NoneOrMore
                 },
                 public_rights: none!()
@@ -303,7 +304,7 @@ mod test {
         assert_eq!(id.to_string(), SCHEMA_ID_BECH32);
         assert_eq!(
             id.to_string(),
-            "rgbsh1rw8wefw62fhkkvqycfr767dzm7dmpgyqz6cfczatt0xa0az9697sehkwrj"
+            "rgbsh172czzdjegt8zuy9nd8l8ul7zectynju66fzdny6qyexglaflc5fsfn455f"
         );
     }
 
@@ -313,7 +314,7 @@ mod test {
         assert_eq!(id.to_string(), SUBSCHEMA_ID_BECH32);
         assert_eq!(
             id.to_string(),
-            "rgbsh1pwfwgxx0ujph3lk54jerzjrl7yk8e9puxj5sjm7qk5p0z7expzpse2nvwn"
+            "rgbsh1255ecnq76a7j4pcy9gwuw8ymk0v48gjx0gs2zk6qqdpctqkhg79qm9x6le"
         );
     }
 
@@ -333,9 +334,9 @@ mod test {
         assert_eq!(format!("{:#?}", schema()), format!("{:#?}", schema21));
         assert_eq!(
             bech32data,
-            "z1qxz56vgwcgcpquew4yz9kyqluprnpuqyjchtq9yfu72g482873056ltwxd6ksn43amktxrameacvpawam40w\
-            mvenqsjdc0ldsdpx6qus97wg7ersntxzrw3n7x03k8ens9z57nuguwe00ftpgpwfch4x6j5ruzgmxx62x98e6x9\
-            3l4tmss4c85z0aghptrewykkr4uxt6qcc3t0mlaw08vxdkgvsfm2847"
+            "z1qxz56vgwcgcpquew4yz9kyqluprnpuqyjchtq9yfu72g4828730sf87npmg2zww9hgae7mdv8mpsd3mmw7at\
+            t47wzzg8ql45zuf8xxuq0nsteegxhw8nj3zhyml8mcmry6c236gfwxk8wnc2qmz24apjh9r02jwcdppnjj53r67\
+            ldgm6kacxvyr653evnwr499s79q2hkc030xew4tedleuauuwzcvlvpvx72kyc"
         );
     }
 
