@@ -62,7 +62,9 @@ pub enum FieldType {
 
 impl From<FieldType> for rgb::schema::FieldType {
     #[inline]
-    fn from(ft: FieldType) -> Self { ft as rgb::schema::FieldType }
+    fn from(ft: FieldType) -> Self {
+        ft as rgb::schema::FieldType
+    }
 }
 
 /// Owned right types used by RGB21 schemata
@@ -90,7 +92,9 @@ pub enum OwnedRightType {
 
 impl From<OwnedRightType> for rgb::schema::OwnedRightType {
     #[inline]
-    fn from(t: OwnedRightType) -> Self { t as rgb::schema::OwnedRightType }
+    fn from(t: OwnedRightType) -> Self {
+        t as rgb::schema::OwnedRightType
+    }
 }
 
 /// State transition types defined by RGB21 schemata
@@ -125,7 +129,9 @@ pub enum TransitionType {
 
 impl From<TransitionType> for rgb::schema::TransitionType {
     #[inline]
-    fn from(t: TransitionType) -> Self { t as rgb::schema::TransitionType }
+    fn from(t: TransitionType) -> Self {
+        t as rgb::schema::TransitionType
+    }
 }
 
 fn type_system() -> TypeSystem {
