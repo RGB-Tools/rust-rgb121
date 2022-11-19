@@ -10,6 +10,7 @@ use rgb::fungible::allocation::{AllocationMap, IntoSealValueMap, OutpointValueVe
 use rgb::{
     secp256k1zkp, value, Assignment, AttachmentId, Consignment, Contract, Genesis, TypedAssignments,
 };
+use seals::txout::CloseMethod;
 use stens::AsciiString;
 
 use crate::schema;
@@ -38,6 +39,7 @@ pub trait Rgb21<'consignment>: Consignment<'consignment> {
         file_attachments: Vec<FileAttachment>,
         bytes_data_vec: Vec<Vec<u8>>,
         allocations: OutpointValueVec,
+        method: CloseMethod,
     ) -> Result<Contract, Error>;
 }
 
@@ -51,6 +53,7 @@ impl<'consignment> Rgb21<'consignment> for Contract {
         file_attachments: Vec<FileAttachment>,
         bytes_data_vec: Vec<Vec<u8>>,
         allocations: OutpointValueVec,
+        method: CloseMethod,
     ) -> Result<Contract, Error> {
         let now = Utc::now().timestamp();
         let mut metadata = type_map! {
@@ -73,7 +76,7 @@ impl<'consignment> Rgb21<'consignment> for Contract {
             .collect();
         metadata.insert(FieldType::Data.into(), data);
 
-        let issued_supply = allocations.sum();
+        let issued_supply = allocations.iter().map(|v| v.value).sum();
         let mut owned_rights = BTreeMap::new();
         owned_rights.insert(
             OwnedRightType::Assets.into(),
@@ -82,7 +85,16 @@ impl<'consignment> Rgb21<'consignment> for Contract {
                     value: issued_supply,
                     blinding: secp256k1zkp::key::ONE_KEY.into(),
                 }],
-                allocations.clone().into_seal_value_map(),
+                allocations
+                    .clone()
+                    .into_iter()
+                    .map(|outpoint_value| {
+                        (
+                            rgb::seal::Revealed::new(method, outpoint_value.outpoint),
+                            outpoint_value.value,
+                        )
+                    })
+                    .collect(),
                 empty![],
             ),
         );

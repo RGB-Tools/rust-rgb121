@@ -12,6 +12,7 @@ use lnpbp::chain::Chain;
 use rgb::fungible::allocation::{AllocatedValue, OutpointValue, UtxobValue};
 use rgb::{Consignment, Contract, IntoRevealedSeal, StateTransfer};
 use rgb21::{Asset, Rgb21};
+use seals::txout::CloseMethod;
 use stens::AsciiString;
 use strict_encoding::{StrictDecode, StrictEncode};
 
@@ -51,6 +52,10 @@ pub enum Command {
 
         /// Asset allocations, in form of <amount>@<txid>:<vout>
         allocations: Vec<OutpointValue>,
+
+        /// Method for seal closing ('tapret1st' or 'opret1st')
+        #[clap(short, long, default_value = "tapret1st")]
+        method: CloseMethod,
     },
 
     /// Prepares state transition for assets transfer.
@@ -87,6 +92,7 @@ fn main() -> Result<(), String> {
             precision,
             parent_id,
             allocations,
+            method,
         } => {
             let contract = Contract::create_rgb21(
                 opts.network,
@@ -97,6 +103,7 @@ fn main() -> Result<(), String> {
                 vec![],
                 vec![],
                 allocations,
+                method,
             );
 
             let _asset =
