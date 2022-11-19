@@ -20,6 +20,12 @@ pub const SCHEMA_ID_BECH32: &str =
 pub const SUBSCHEMA_ID_BECH32: &str =
     "rgbsh1ep4k4qvghntwptcn0gqmfpdvr8vz3amslvy4pc7s32u7h500l5hqxlzjsk";
 
+/// Parent ID of the asset
+pub const FIELD_TYPE_PARENT_ID: u16 = 0xC3;
+
+/// Transition engraving an NFT token
+pub const TRANSITION_TYPE_ENGRAVING: u16 = 0x10A4;
+
 /// Field types for RGB121 schemata
 ///
 /// Subset of known RGB schema pre-defined types applicable to fungible assets.
