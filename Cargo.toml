@@ -1,5 +1,5 @@
 [package]
-name = "rgb21"
+name = "rgb121"
 version = "0.1.0"
 license = "MIT"
 authors = [
@@ -8,8 +8,8 @@ authors = [
   "Zoe Faltibà <zoefaltiba@gmail.com>",
   "Nicola Busanello <nicola.busanello@gmail.com>"
 ]
-description = "RGB-21 Library: fungible digital assets for bitcoin & lightning"
-repository = "https://github.com/RGB-Tools/rust-rgb21"
+description = "RGB-121 Library: fungible digital assets for bitcoin & lightning"
+repository = "https://github.com/RGB-Tools/rust-rgb121"
 homepage = "https://rgb.network"
 keywords = ["bitcoin", "lightning", "rgb", "smart-contracts", "nft"]
 categories = ["cryptography::cryptocurrencies"]
@@ -18,13 +18,13 @@ edition = "2021"
 rust-version = "1.59.0"
 
 [lib]
-name = "rgb21"
+name = "rgb121"
 path = "src/lib.rs"
 crate-type = ["rlib", "staticlib"]
 
 [[bin]]
-name = "rgb21"
-path = "src/bin/rgb21.rs"
+name = "rgb121"
+path = "src/bin/rgb121.rs"
 required-features = ["cli"]
 
 [dependencies]

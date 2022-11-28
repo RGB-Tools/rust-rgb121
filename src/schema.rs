@@ -1,4 +1,4 @@
-//! RGB21 schemata defining fungible asset smart contract prototypes.
+//! RGB121 schemata defining fungible asset smart contract prototypes.
 
 use std::str::FromStr;
 
@@ -11,16 +11,16 @@ use rgb::vm::embedded::constants::*;
 use rgb::ValidationScript;
 use stens::{PrimitiveType, StructField, TypeRef, TypeSystem};
 
-/// Schema identifier for full RGB21 fungible asset
+/// Schema identifier for full RGB121 fungible asset
 pub const SCHEMA_ID_BECH32: &str =
     "rgbsh1ykclt9qxkskqt88dwgccsp4w624k7adjwj06sknjkh04ygtc7rqsnykld7";
 
-/// Schema identifier for full RGB21 fungible asset subschema prohibiting
+/// Schema identifier for full RGB121 fungible asset subschema prohibiting
 /// engraving operation
 pub const SUBSCHEMA_ID_BECH32: &str =
     "rgbsh1ep4k4qvghntwptcn0gqmfpdvr8vz3amslvy4pc7s32u7h500l5hqxlzjsk";
 
-/// Field types for RGB21 schemata
+/// Field types for RGB121 schemata
 ///
 /// Subset of known RGB schema pre-defined types applicable to fungible assets.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Display)]
@@ -68,7 +68,7 @@ impl From<FieldType> for rgb::schema::FieldType {
     }
 }
 
-/// Owned right types used by RGB21 schemata
+/// Owned right types used by RGB121 schemata
 ///
 /// Subset of known RGB schema pre-defined types applicable to fungible assets.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Display)]
@@ -89,7 +89,7 @@ impl From<OwnedRightType> for rgb::schema::OwnedRightType {
     }
 }
 
-/// State transition types defined by RGB21 schemata
+/// State transition types defined by RGB121 schemata
 ///
 /// Subset of known RGB schema pre-defined types applicable to fungible assets.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Display)]
@@ -166,7 +166,7 @@ fn issue() -> TransitionSchema {
     }
 }
 
-/// Builds & returns complete RGB21 schema (root schema object)
+/// Builds & returns complete RGB121 schema (root schema object)
 pub fn schema() -> Schema {
     use Occurrences::*;
 
@@ -243,14 +243,14 @@ pub fn schema() -> Schema {
     }
 }
 
-/// RGB21 subschema which allows simple asset transfers but no engraving
+/// RGB121 subschema which allows simple asset transfers but no engraving
 pub fn subschema() -> Schema {
     use Occurrences::*;
 
     Schema {
         rgb_features: none!(),
         root_id: SchemaId::from_str(SCHEMA_ID_BECH32)
-            .expect("Broken root schema ID for RGB21 sub-schema"),
+            .expect("Broken root schema ID for RGB121 sub-schema"),
         type_system: type_system(),
         genesis: genesis(),
         extensions: none!(),
@@ -330,16 +330,16 @@ mod test {
     fn schema_strict_encode() {
         let data = schema()
             .strict_serialize()
-            .expect("RGB-21 schema serialization failed");
+            .expect("RGB-121 schema serialization failed");
 
         let bech32data = data.bech32_zip_string();
         println!("{}", bech32data);
 
-        let schema21 =
-            Schema::strict_deserialize(data).expect("RGB-21 schema deserialization failed");
+        let schema121 =
+            Schema::strict_deserialize(data).expect("RGB-121 schema deserialization failed");
 
-        assert_eq!(schema(), schema21);
-        assert_eq!(format!("{:#?}", schema()), format!("{:#?}", schema21));
+        assert_eq!(schema(), schema121);
+        assert_eq!(format!("{:#?}", schema()), format!("{:#?}", schema121));
         assert_eq!(
             bech32data,
             "z1qxz56wgwcfqqe894xuf8fzlcqqlc9q386zjgzfjg8sn5fapuytlkyxtmjv3g0994wej8k0pnmp7gy8wweln0\

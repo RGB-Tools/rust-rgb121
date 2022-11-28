@@ -1,8 +1,8 @@
-# RGB-21 Library
+# RGB-121 Library
 
 > :warning: **Warning: this is a work in progress**
 
-RGB21 is an RGB schema for non-fungible digital assets on bitcoin & lightning.
+RGB121 is an RGB schema for collectibles on bitcoin & lightning.
 
 This repository provides rust library and a command-line utility `rgb21` which
 can be used alongside RGB Node to generate and parse RGB21 data (schema, issue

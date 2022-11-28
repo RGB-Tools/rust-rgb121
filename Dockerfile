@@ -5,8 +5,8 @@
 #
 # https://github.com/LukeMathWalker/cargo-chef
 
-ARG SRC_DIR=/usr/local/src/rgb21
-ARG BUILDER_DIR=/srv/rgb21
+ARG SRC_DIR=/usr/local/src/rgb121
+ARG BUILDER_DIR=/srv/rgb121
 
 # Base image
 FROM rust:1.59.0-slim-bullseye as chef
@@ -63,4 +63,4 @@ RUN rm -rf */ *.d .[^.] .??*
 
 USER ${USER}
 
-ENTRYPOINT ["rgb21"]
+ENTRYPOINT ["rgb121"]

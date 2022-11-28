@@ -11,17 +11,17 @@ use colored::Colorize;
 use lnpbp::chain::Chain;
 use rgb::fungible::allocation::{AllocatedValue, OutpointValue, UtxobValue};
 use rgb::{Consignment, Contract, IntoRevealedSeal, StateTransfer};
-use rgb21::{Asset, Rgb21};
+use rgb121::{Asset, Rgb121};
 use stens::AsciiString;
 use strict_encoding::{StrictDecode, StrictEncode};
 
 #[derive(Parser, Clone, Debug)]
 #[clap(
-    name = "rgb21",
-    bin_name = "rgb21",
+    name = "rgb121",
+    bin_name = "rgb121",
     author,
     version,
-    about = "Command-line tool for working with RGB21 fungible assets"
+    about = "Command-line tool for working with RGB121 fungible assets"
 )]
 pub struct Opts {
     /// Bitcoin network to use
@@ -88,7 +88,7 @@ fn main() -> Result<(), String> {
             parent_id,
             allocations,
         } => {
-            let contract = Contract::create_rgb21(
+            let contract = Contract::create_rgb121(
                 opts.network,
                 name,
                 description,
@@ -100,7 +100,7 @@ fn main() -> Result<(), String> {
             );
 
             let _asset =
-                Asset::try_from(&contract).expect("create_rgb21 does not match RGB21 schema");
+                Asset::try_from(&contract).expect("create_rgb121 does not match RGB121 schema");
 
             eprintln!(
                 "{} {}\n",

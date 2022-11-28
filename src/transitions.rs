@@ -8,7 +8,7 @@ use seals::txout::ExplicitSeal;
 use super::schema::{OwnedRightType, TransitionType};
 use super::Asset;
 
-/// Errors happening during construction of RGB-21 asset state transitions
+/// Errors happening during construction of RGB-121 asset state transitions
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Display, Error)]
 #[display(doc_comments)]
 pub enum Error {
@@ -92,7 +92,7 @@ impl Asset {
         todo!()
     }
 
-    /// Creates a fungible asset-specific state transition (i.e. RGB-21
+    /// Creates a fungible asset-specific state transition (i.e. RGB-121
     /// schema-based) given an asset information, inputs and desired outputs
     pub fn transfer(
         &self,

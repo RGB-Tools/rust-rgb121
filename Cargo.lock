@@ -1305,7 +1305,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rgb21"
+name = "rgb121"
 version = "0.1.0"
 dependencies = [
  "amplify",

@@ -25,11 +25,11 @@ pub struct FileAttachment {
     pub salt: u64,
 }
 
-/// Extension trait for consignments defining RGB21-specific API.
+/// Extension trait for consignments defining RGB121-specific API.
 #[allow(clippy::too_many_arguments)]
-pub trait Rgb21<'consignment>: Consignment<'consignment> {
+pub trait Rgb121<'consignment>: Consignment<'consignment> {
     /// Performs primary asset issue, producing [`Contract`] consignment.
-    fn create_rgb21(
+    fn create_rgb121(
         chain: Chain,
         name: AsciiString,
         description: Option<AsciiString>,
@@ -41,8 +41,8 @@ pub trait Rgb21<'consignment>: Consignment<'consignment> {
     ) -> Result<Contract, Error>;
 }
 
-impl<'consignment> Rgb21<'consignment> for Contract {
-    fn create_rgb21(
+impl<'consignment> Rgb121<'consignment> for Contract {
+    fn create_rgb121(
         chain: Chain,
         name: AsciiString,
         description: Option<AsciiString>,
@@ -132,7 +132,7 @@ impl<'consignment> Rgb21<'consignment> for Contract {
     }
 }
 
-/// Errors generated during RGB21 asset creation
+/// Errors generated during RGB121 asset creation
 #[derive(Clone, PartialEq, Eq, Hash, Debug, Display, From, Error)]
 #[display(doc_comments)]
 pub enum Error {

@@ -3,9 +3,9 @@ use std::collections::btree_set;
 use bitcoin::OutPoint;
 use rgb::{ConsignmentType, ContractState, InmemConsignment, NodeId, OwnedValue};
 
-/// RGB21 asset information.
+/// RGB121 asset information.
 ///
-/// Structure presents complete set of RGB21 asset-related data which can be
+/// Structure presents complete set of RGB121 asset-related data which can be
 /// extracted from the genesis or a consignment. It is not the source of the
 /// truth, and the presence of the data in the structure does not imply their
 /// validity, since the structure constructor does not validates blockchain or
@@ -72,12 +72,12 @@ impl Asset {
     }
 }
 
-/// Errors generated during RGB21 asset information parsing from the underlying
+/// Errors generated during RGB121 asset information parsing from the underlying
 /// genesis or consignment data
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Display, From, Error)]
 #[display(doc_comments)]
 pub enum Error {
-    /// genesis schema id does not match any of RGB21 schemata
+    /// genesis schema id does not match any of RGB121 schemata
     WrongSchemaId,
 
     /// genesis defines a seal referencing witness transaction while there

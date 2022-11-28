@@ -10,13 +10,13 @@
     missing_docs
 )]
 
-//! RGB21 library for working with fungible asset types, operating under
-//! schemata, defined with LNPBP-21 standard:
-//! - Root RGB21 schema, returned by [`schema::schema()`] with id
+//! RGB121 library for working with fungible asset types, operating under
+//! schemata, defined with LNPBP-121 standard:
+//! - Root RGB121 schema, returned by [`schema::schema()`] with id
 //!   [`SCHEMA_ID_BECH32`]
-//! - RGB21 subschema, returned by [`schema::subschema()`], prohibiting asset
+//! - RGB121 subschema, returned by [`schema::subschema()`], prohibiting asset
 //!   replacement procedure and having id [`SUBSCHEMA_ID_BECH32`]
-//! - High-level RGB21 API performing asset issuance, transfers and other
+//! - High-level RGB121 API performing asset issuance, transfers and other
 //!   asset-management operations
 
 #[macro_use]
@@ -39,7 +39,7 @@ mod asset;
 mod transitions;
 
 pub use asset::{Asset, Error};
-pub use create::{Error as CreateError, FileAttachment, Rgb21};
+pub use create::{Error as CreateError, FileAttachment, Rgb121};
 pub use schema::{
     schema, subschema, FieldType, OwnedRightType, SCHEMA_ID_BECH32, SUBSCHEMA_ID_BECH32,
 };
