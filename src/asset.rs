@@ -34,9 +34,7 @@ pub struct Asset(ContractState);
 impl Asset {
     /// Lists all known allocations for the given bitcoin transaction
     /// [`OutPoint`]
-    pub fn known_coins(&self) -> btree_set::Iter<OwnedValue> {
-        self.0.owned_values.iter()
-    }
+    pub fn known_coins(&self) -> btree_set::Iter<OwnedValue> { self.0.owned_values.iter() }
 
     /// Lists all known allocations for the given bitcoin transaction
     /// [`OutPoint`]
@@ -49,8 +47,7 @@ impl Asset {
 }
 
 impl<T> TryFrom<&InmemConsignment<T>> for Asset
-where
-    T: ConsignmentType,
+where T: ConsignmentType
 {
     type Error = Error;
 
