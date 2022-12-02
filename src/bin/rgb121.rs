@@ -2,15 +2,15 @@
 extern crate clap;
 extern crate serde_crate as serde;
 
-use std::collections::BTreeMap;
 use std::path::PathBuf;
+use std::str::FromStr;
 
 use bitcoin::OutPoint;
 use clap::Parser;
 use colored::Colorize;
 use lnpbp::chain::Chain;
 use rgb::fungible::allocation::{AllocatedValue, OutpointValue, UtxobValue};
-use rgb::{Consignment, Contract, IntoRevealedSeal, StateTransfer};
+use rgb::{Consignment, Contract, ContractId, IntoRevealedSeal, StateTransfer};
 use rgb121::{Asset, Rgb121};
 use seals::txout::CloseMethod;
 use stens::AsciiString;
@@ -47,11 +47,12 @@ pub enum Command {
         #[clap(short, long, default_value = "8")]
         precision: u8,
 
-        /// Asset parent ID
-        parent_id: Option<AsciiString>,
-
         /// Asset allocations, in form of <amount>@<txid>:<vout>
         allocations: Vec<OutpointValue>,
+
+        /// Asset parent ID
+        #[clap(long, validator=parent_validator)]
+        parent_id: Option<AsciiString>,
 
         /// Method for seal closing ('tapret1st' or 'opret1st')
         #[clap(short, long, default_value = "tapret1st")]
@@ -104,7 +105,8 @@ fn main() -> Result<(), String> {
                 vec![],
                 allocations,
                 method,
-            );
+            )
+            .expect("create rgb21 contract failed");
 
             let _asset =
                 Asset::try_from(&contract).expect("create_rgb121 does not match RGB121 schema");
@@ -159,4 +161,14 @@ fn main() -> Result<(), String> {
     }
 
     Ok(())
+}
+
+fn parent_validator(parent_id: &str) -> Result<(), String> {
+    let contract = ContractId::from_str(parent_id);
+
+    if contract.is_err() {
+        Err("Parent ID must be a valid contract ID".to_string())
+    } else {
+        Ok(())
+    }
 }
